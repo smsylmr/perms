@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +19,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 
 import static java.util.Collections.singletonList;
@@ -36,7 +38,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // 因为UserDetailsService的实现类实在太多啦，这里设置一下我们要注入的实现类
     @Qualifier("userDetailsServiceImpl")
     private UserDetailsService userDetailsService;
-
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -77,8 +78,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().accessDeniedHandler(new JwtAccessDeniedHandler())
                 .and()
                 .authorizeRequests()
-                // 需要角色为ADMIN才能删除该资源
-                .antMatchers(HttpMethod.DELETE, "/tasks/**").hasAnyRole("ADMIN")
+                // 对于登录login 注册register 验证码captchaImage 允许匿名访问
+                .antMatchers("/user/login", "/register", "/captchaImage").anonymous()
+                .antMatchers("/doc.html", "/doc.html/**", "/webjars/**", "/v2/**", "/swagger-resources",
+                        "/swagger-resources/**", "/swagger-ui.html", "/swagger-ui.html/**")
+                .permitAll()
                 // 都要验证登录
                 .anyRequest().authenticated()
                 .and()
@@ -87,9 +91,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 // 添加到过滤链中
                 // 先是UsernamePasswordAuthenticationFilter用于login校验
-                .addFilter(new JWTAuthenticationFilter(authenticationManager(),redisTemplate))
+                .addFilter(new JWTAuthenticationFilter())
                 // 再通过OncePerRequestFilter，对其他请求过滤
-                .addFilter(new JWTAuthorizationFilter(authenticationManager(),redisTemplate));
+                .addFilter(new JWTAuthorizationFilter(authenticationManager()));
 
     }
 
@@ -122,5 +126,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception
+    {
+        return super.authenticationManagerBean();
     }
 }

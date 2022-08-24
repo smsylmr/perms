@@ -1,28 +1,26 @@
 package com.example.perms.auth;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.example.perms.bean.res.ResCode;
 import com.example.perms.bean.res.Result;
 import com.example.perms.utils.JwtTokenUtils;
+import com.example.perms.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.annotation.Resource;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author linmr
@@ -32,46 +30,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private AuthenticationManager authenticationManager;
+    @Resource
+    private RedisUtils redisUtils;
 
-    private RedisTemplate redisTemplate;
-
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager,RedisTemplate redisTemplate) {
-        this.authenticationManager = authenticationManager;
-        this.redisTemplate = redisTemplate;
-        // 设置该过滤器地址
-        super.setFilterProcessesUrl("/auth/login");
-    }
-
-    /**
-     * description: 登录验证
-     *
-     * @param request
-     * @param response
-     * @return org.springframework.security.core.Authentication
-     */
-    @Override
-    public Authentication attemptAuthentication(HttpServletRequest request,
-                                                HttpServletResponse response) throws AuthenticationException {
-//        LoginUser loginUser = new LoginUser();
-//        loginUser.setUsername(request.getParameter("username"));
-//        loginUser.setPassword(request.getParameter("password"));
-        StringBuilder sb = new StringBuilder();
-        String line = null;
-        try {
-            BufferedReader reader = request.getReader();
-            while ((line = reader.readLine()) != null)
-                sb.append(line);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        LoginUser loginUser = JSONObject.parseObject(sb.toString(), LoginUser.class);
-        log.info("用户登录验证拦截，用户登录信息{}",loginUser.toString());
-        return authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword(), new ArrayList<>())
-        );
-
-    }
 
     /**
      * description: 登录验证成功后调用，验证成功后将生成Token，并重定向到用户主页home
@@ -101,7 +62,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String token = JwtTokenUtils.createToken(jwtUser.getUsername(), jwtUser.getId().toString(),roles,false);
         log.info("生成Token:{}",token);
         //设置到缓存 过期时间1小时
-        redisTemplate.boundValueOps(jwtUser.getId().toString()).set(token,60, TimeUnit.MINUTES);
+        redisUtils.set(jwtUser.getId().toString(),token,3600);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         response.getWriter().write(JSON.toJSONString(new Result<>(ResCode.OK,token)));

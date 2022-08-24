@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.example.perms.bean.res.ResCode;
 import com.example.perms.bean.res.Result;
 import com.example.perms.utils.JwtTokenUtils;
+import com.example.perms.utils.RedisUtils;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,13 +33,13 @@ import java.util.List;
 @Slf4j
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
+    @Resource
+    private RedisUtils redisUtils;
 
-    private RedisTemplate redisTemplate;
-
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager,RedisTemplate redisTemplate) {
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
-        this.redisTemplate = redisTemplate;
     }
+
 
     /**
      * description: 从request的header部分读取Token
@@ -64,8 +65,8 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         String token = tokenHeader.replace(JwtTokenUtils.TOKEN_PREFIX, "");
         UsernamePasswordAuthenticationToken authentication = null;
         try {
-            String previousToken = redisTemplate.boundValueOps(JwtTokenUtils.getId(token))
-                    .get().toString().replace(JwtTokenUtils.TOKEN_PREFIX, "");
+            String previousToken = redisUtils.get(JwtTokenUtils.getId(token))
+                    .toString().replace(JwtTokenUtils.TOKEN_PREFIX, "");
             if (!token.equals(previousToken)) {
                 SecurityContextHolder.clearContext();
                 response.setCharacterEncoding("UTF-8");

@@ -1,8 +1,13 @@
 package com.example.perms.utils;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.perms.bean.entity.SysRole;
+import com.example.perms.bean.entity.SysRoleMenu;
 import com.example.perms.bean.entity.SysUser;
 import com.example.perms.bean.vo.SysUserVO;
+import com.example.perms.web.service.SysMenuService;
+import com.example.perms.web.service.SysRoleMenuService;
+import com.example.perms.web.service.SysUserRoleService;
 import com.example.perms.web.service.SysUserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +16,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+import java.util.List;
+
 /**
  * @author shuang.kou
  * @description 获取当前请求的用户
@@ -18,16 +26,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class CurrentUserUtils {
 
-    @Autowired
+    @Resource
     private SysUserService userService;
-    @Autowired
-    private RedisTemplate redisTemplate;
+    @Resource
+    private SysRoleMenuService roleMenuService;
+    @Resource
+    private SysMenuService menuService;
+    @Resource
+    private SysUserRoleService userRoleService;
+    @Resource
+    private RedisUtils redisUtils ;
 
     public SysUserVO getCurrentUser() {
         SysUser one = userService.getOne(new QueryWrapper<SysUser>().eq("login_name", getCurrentUserName()));
         SysUserVO sysUserVO = new SysUserVO();
         BeanUtils.copyProperties(one,sysUserVO);
-        sysUserVO.setEnable(sysUserVO.getStatus().equals("0"));
+        List<SysRole> sysRoles = userRoleService.listByUserId(one.getUserId());
+        List<SysRoleMenu> menus = roleMenuService.list(new QueryWrapper<SysRoleMenu>().eq("role_id", sysRoles.get(0).getRoleId()));
+        sysUserVO.setMenuList(menus);
         return sysUserVO;
     }
 
@@ -40,6 +56,6 @@ public class CurrentUserUtils {
     }
 
     public void logout() {
-        redisTemplate.delete(getCurrentUser().getUserId().toString());
+        redisUtils.del(getCurrentUser().getUserId().toString());
     }
 }

@@ -2,8 +2,7 @@ package com.example.perms.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.perms.bean.entity.SysUser;
-import com.example.perms.bean.req.SysUserRequest;
-import com.example.perms.bean.req.UpdStateRequest;
+import com.example.perms.bean.req.*;
 import com.example.perms.bean.vo.SysUserVO;
 import com.example.perms.utils.PageUtils;
 
@@ -16,10 +15,18 @@ import com.example.perms.utils.PageUtils;
 public interface SysUserService extends IService<SysUser> {
 
     SysUser selectByName(String name);
+
     PageUtils<SysUserVO> list(SysUserRequest sysUserRequest);
 
     void updateState(String userId, UpdStateRequest request);
 
-    void updateUser(SysUser sysUser);
+    void updateUser(SysUserUpdRequest sysUser);
 
+    void saveUser(SysUserUpdRequest sysUser);
+
+    void delete(String userIds);
+
+    void changePwd(String userId, ChangePwdRequest request);
+
+    void login(LoginRequest loginRequest);
 }

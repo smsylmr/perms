@@ -5,18 +5,22 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.perms.bean.entity.SysUser;
-import com.example.perms.bean.req.SysUserRequest;
-import com.example.perms.bean.req.UpdStateRequest;
+import com.example.perms.bean.entity.SysUserRole;
+import com.example.perms.bean.req.*;
 import com.example.perms.bean.vo.SysUserVO;
 import com.example.perms.utils.CurrentUserUtils;
 import com.example.perms.utils.OrikaUtils;
 import com.example.perms.utils.PageUtils;
 import com.example.perms.web.mapper.SysUserMapper;
+import com.example.perms.web.service.SysUserRoleService;
 import com.example.perms.web.service.SysUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -30,8 +34,12 @@ import java.util.List;
 @Service("sysUserService")
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
 
-    @Autowired
+    @Resource
     private CurrentUserUtils currentUserUtils;
+    @Resource
+    private SysUserRoleService userRoleService;
+    @Resource
+    private AuthenticationManager authenticationManager;
 
     @Override
     public SysUser selectByName(String name) {
@@ -58,9 +66,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         Page<SysUser> page = page(new Page<>(sysUserRequest.getCurPage(), sysUserRequest.getLimit()), queryWrapper);
         List<SysUserVO> sysUserVOS = OrikaUtils.mapAsList(page.getRecords(), SysUserVO.class);
-        sysUserVOS.forEach(sysUserVO -> {
-            sysUserVO.setEnable(sysUserVO.getStatus().equals("0"));
-        });
         return new PageUtils<>(sysUserVOS,page);
 
     }
@@ -80,14 +85,63 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public void updateUser(SysUser sysUser) {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String pwd = bCryptPasswordEncoder.encode(sysUser.getPassword());
-        SysUser byId = getById(sysUser.getUserId());
-        if(!byId.getPassword().equals(pwd)){
-
+    public void updateUser(SysUserUpdRequest sysUser) {
+        SysUser old = this.getById(sysUser.getUserId());
+        OrikaUtils.map(sysUser,old);
+        updateById(old);
+        SysUserRole role = userRoleService.getOne(new QueryWrapper<SysUserRole>().eq("user_id", sysUser.getUserId()));
+        if(!sysUser.getRoleId().equals(role.getId().toString())){
+            role.setRoleId(Long.parseLong(sysUser.getRoleId()));
+            userRoleService.updateById(role);
         }
-        sysUser.setPassword(pwd);
-        updateById(sysUser);
+    }
+
+    @Override
+    public void saveUser(SysUserUpdRequest sysUser) {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        sysUser.setPassword(bCryptPasswordEncoder.encode(sysUser.getPassword()));
+        SysUser user = OrikaUtils.map(sysUser, SysUser.class);
+        user.setDelFlag("0");
+        user.setCreateBy(currentUserUtils.getCurrentUser().getLoginName());
+        this.save(user);
+        SysUserRole userRole = new SysUserRole();
+        userRole.setUserId(user.getUserId());
+        userRole.setRoleId(Long.valueOf(sysUser.getRoleId()));
+        userRoleService.save(userRole);
+    }
+
+    @Override
+    public void delete(String userIds) {
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        String[] split = userIds.split(",");
+        queryWrapper.in("user_id", Arrays.asList(split));
+        List<SysUser> list = list(queryWrapper);
+        list.forEach(sysUser -> {
+            sysUser.setDelFlag("2");
+            sysUser.setUpdateTime(LocalDateTime.now());
+            sysUser.setUpdateBy(currentUserUtils.getCurrentUser().getUserId().toString());
+        });
+        updateBatchById(list);
+    }
+
+    @Override
+    public void changePwd(String userId, ChangePwdRequest request) {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String encode = bCryptPasswordEncoder.encode(request.getOldPwd());
+        SysUser sysUser = this.getById(userId);
+        if(!encode.equals(sysUser.getPassword())){
+            throw new RuntimeException("密码错误");
+        }
+        sysUser.setPassword(bCryptPasswordEncoder.encode(request.getOldPwd()));
+        this.updateById(sysUser);
+    }
+
+    @Override
+    public void login(LoginRequest loginRequest) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getLoginName(), loginRequest.getPassword());
+        //AuthenticationContextHolder.setContext(authenticationToken);
+        // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername
+        authenticationManager.authenticate(authenticationToken);
+
     }
 }

@@ -1,20 +1,15 @@
 package com.example.perms.bean.vo;
 
-import com.example.perms.bean.entity.SysRoleMenu;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * @author linmr
  * @description:
- * @date 2020/12/16
+ * @date 2022/8/24
  */
-@Data
-public class SysUserVO implements Serializable {
+public class SysUserPageVO {
     private static final long serialVersionUID = 1L;
 
     private Long userId;
@@ -68,8 +63,4 @@ public class SysUserVO implements Serializable {
      * 备注
      */
     private String remark;
-    /**
-     * 菜单列表
-     */
-    private List<SysRoleMenu> menuList;
 }

@@ -1,74 +1,92 @@
 package com.example.perms.web.controller;
 
-import com.example.perms.bean.entity.SysUser;
-import com.example.perms.bean.req.SysUserRequest;
-import com.example.perms.bean.req.UpdStateRequest;
+import com.example.perms.bean.req.*;
 import com.example.perms.bean.res.ResCode;
 import com.example.perms.bean.res.Result;
 import com.example.perms.bean.vo.SysUserVO;
 import com.example.perms.utils.CurrentUserUtils;
 import com.example.perms.utils.PageUtils;
 import com.example.perms.web.service.SysUserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 /**
  * @author linmr
  * @description:
  * @date 2020/12/14
  */
-
+@Api(tags = "用户模块")
 @RestController
 public class SysUserController {
 
-    @Autowired
+    @Resource
     private CurrentUserUtils currentUserUtils;
-    @Autowired
+    @Resource
     private SysUserService sysUserService;
 
+    @PostMapping("/user/login")
+    @ApiOperation(value = "登录")
+    public Result<Void> login(@RequestBody LoginRequest loginRequest){
+        sysUserService.login(loginRequest);
+        return new Result<>(ResCode.OK);
+    }
+
     @GetMapping("/user/logout")
+    @ApiOperation(value = "退出")
     public Result<Void> logout(){
         currentUserUtils.logout();
         return new Result<>(ResCode.OK);
     }
 
     @GetMapping("/user/info")
+    @ApiOperation(value = "登录用户信息")
     public Result<SysUserVO> getCurrentUser(){
         SysUserVO currentUser = currentUserUtils.getCurrentUser();
         return new Result<>(ResCode.OK,currentUser);
     }
 
     @PostMapping("/user/list")
+    @ApiOperation(value = "用户列表")
     public Result<PageUtils<SysUserVO>> list(@RequestBody SysUserRequest sysUserRequest){
         PageUtils<SysUserVO> list = sysUserService.list(sysUserRequest);
         return new Result<>(ResCode.OK,list);
     }
 
     @PostMapping("/user")
-    public Result<Void> add(@RequestBody SysUser sysUser){
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        sysUser.setPassword(bCryptPasswordEncoder.encode(sysUser.getPassword()));
-        sysUserService.save(sysUser);
+    @ApiOperation(value = "新增用户")
+    public Result<Void> add(@RequestBody SysUserUpdRequest sysUser){
+        sysUserService.saveUser(sysUser);
         return new Result<>(ResCode.OK);
     }
 
-//    @GetMapping("/delete/{userId}")
-//    public Result<Void> delete(@PathVariable String userId){
-//        sysUserService.removeById(userId);
-//        return new Result<>(ResCode.OK);
-//    }
+    @GetMapping("/delete/{userId}")
+    @ApiOperation(value = "批量删除用户")
+    public Result<Void> delete(@PathVariable String userId){
+        sysUserService.delete(userId);
+        return new Result<>(ResCode.OK);
+    }
 
     @PutMapping("/user/{userId}")
-    public Result<Void> update(@RequestBody SysUser sysUser){
-
+    @ApiOperation(value = "更新用户信息")
+    public Result<Void> update(@RequestBody SysUserUpdRequest sysUser){
         sysUserService.updateUser(sysUser);
         return new Result<>(ResCode.OK);
     }
 
     @PutMapping("/user/state/{userId}")
+    @ApiOperation(value = "批量修改用户状态")
     public Result<Void> status(@PathVariable String userId,@RequestBody UpdStateRequest request){
         sysUserService.updateState(userId,request);
+        return new Result<>(ResCode.OK);
+    }
+
+    @PutMapping("/user/pwd/{userId}")
+    @ApiOperation(value = "修改密码")
+    public Result<Void> changePwd(@PathVariable String userId,@RequestBody ChangePwdRequest request){
+        sysUserService.changePwd(userId,request);
         return new Result<>(ResCode.OK);
     }
 }
