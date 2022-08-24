@@ -1,0 +1,40 @@
+server:
+  port: 9505
+spring:
+  application:
+    name: perms
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      url: jdbc:mysql://116.62.186.221:3307/perms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      username: root
+      password: 123456
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    clean-disabled: false
+    # 到新的环境中数据库中有数据，且没有flyway_schema_history表时，是否执行迁移操作,如果设置为false，在启动时会报错，并停止迁移;如果为true,则生成history表并完成所有的迁移，要根据实际情况设置;
+    baseline-on-migrate: true
+    #  在迁移时，是否校验脚本，假设V1.0__初始.sql已经迁移过了，在下次启动时会校验该脚本是否有变更过，则抛出异常
+    validate-on-migrate: true
+   #出现错误时, 直接抛出异常(便于异常统一处理，否则捕获不到404)
+  mvc:
+    throw-exception-if-no-handler-found: true
+  #不要为我们工程中的资源文件建立映射
+  resources:
+    add-mappings: false
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
