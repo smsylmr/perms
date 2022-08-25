@@ -29,9 +29,9 @@ public class SysUserController {
 
     @PostMapping("/user/login")
     @ApiOperation(value = "登录")
-    public Result<Void> login(@RequestBody LoginRequest loginRequest){
-        sysUserService.login(loginRequest);
-        return new Result<>(ResCode.OK);
+    public Result<String> login(@RequestBody LoginRequest loginRequest){
+        String token = sysUserService.login(loginRequest);
+        return new Result<>(ResCode.OK,token);
     }
 
     @GetMapping("/user/logout")
@@ -69,7 +69,7 @@ public class SysUserController {
         return new Result<>(ResCode.OK);
     }
 
-    @PutMapping("/user/{userId}")
+    @PutMapping("/user/update")
     @ApiOperation(value = "更新用户信息")
     public Result<Void> update(@RequestBody SysUserUpdRequest sysUser){
         sysUserService.updateUser(sysUser);

@@ -28,5 +28,5 @@ public interface SysUserService extends IService<SysUser> {
 
     void changePwd(String userId, ChangePwdRequest request);
 
-    void login(LoginRequest loginRequest);
+    String login(LoginRequest loginRequest);
 }

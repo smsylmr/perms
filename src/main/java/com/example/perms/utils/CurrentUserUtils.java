@@ -1,6 +1,7 @@
 package com.example.perms.utils;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.perms.bean.entity.SysMenu;
 import com.example.perms.bean.entity.SysRole;
 import com.example.perms.bean.entity.SysRoleMenu;
 import com.example.perms.bean.entity.SysUser;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Queue;
+import java.util.stream.Collectors;
 
 /**
  * @author shuang.kou
@@ -42,7 +45,9 @@ public class CurrentUserUtils {
         SysUserVO sysUserVO = new SysUserVO();
         BeanUtils.copyProperties(one,sysUserVO);
         List<SysRole> sysRoles = userRoleService.listByUserId(one.getUserId());
-        List<SysRoleMenu> menus = roleMenuService.list(new QueryWrapper<SysRoleMenu>().eq("role_id", sysRoles.get(0).getRoleId()));
+        List<SysRoleMenu> roleMenus = roleMenuService.list(new QueryWrapper<SysRoleMenu>().eq("role_id", sysRoles.get(0).getRoleId()));
+        List<Long> menuList = roleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
+        List<SysMenu> menus = menuService.list(new QueryWrapper<SysMenu>().in("menu_id", menuList));
         sysUserVO.setMenuList(menus);
         return sysUserVO;
     }

@@ -4,25 +4,28 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.perms.auth.JwtAuthUser;
 import com.example.perms.bean.entity.SysUser;
 import com.example.perms.bean.entity.SysUserRole;
 import com.example.perms.bean.req.*;
 import com.example.perms.bean.vo.SysUserVO;
-import com.example.perms.utils.CurrentUserUtils;
-import com.example.perms.utils.OrikaUtils;
-import com.example.perms.utils.PageUtils;
+import com.example.perms.utils.*;
 import com.example.perms.web.mapper.SysUserMapper;
 import com.example.perms.web.service.SysUserRoleService;
 import com.example.perms.web.service.SysUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -32,6 +35,7 @@ import java.util.List;
  * @since 2020-12-09 16:44:03
  */
 @Service("sysUserService")
+@Slf4j
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
 
     @Resource
@@ -40,7 +44,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private SysUserRoleService userRoleService;
     @Resource
     private AuthenticationManager authenticationManager;
-
+    @Resource
+    private RedisUtils redisUtils;
     @Override
     public SysUser selectByName(String name) {
         QueryWrapper<SysUser> queryWrapper=new QueryWrapper<>();
@@ -90,7 +95,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         OrikaUtils.map(sysUser,old);
         updateById(old);
         SysUserRole role = userRoleService.getOne(new QueryWrapper<SysUserRole>().eq("user_id", sysUser.getUserId()));
-        if(!sysUser.getRoleId().equals(role.getId().toString())){
+        if(sysUser.getRoleId()!=null&&!sysUser.getRoleId().equals(role.getId().toString())){
             role.setRoleId(Long.parseLong(sysUser.getRoleId()));
             userRoleService.updateById(role);
         }
@@ -137,11 +142,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public void login(LoginRequest loginRequest) {
+    public String login(LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getLoginName(), loginRequest.getPassword());
         //AuthenticationContextHolder.setContext(authenticationToken);
         // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername
-        authenticationManager.authenticate(authenticationToken);
-
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+        JwtAuthUser jwtUser = (JwtAuthUser) authenticate.getPrincipal();
+        log.info("用户登陆验证拦截，生成JwtAuthUser:{}",jwtUser.toString());
+        List<String> roles = new ArrayList<>();
+        Collection<? extends GrantedAuthority> authorities = jwtUser.getAuthorities();
+        for (GrantedAuthority authority : authorities){
+            roles.add(authority.getAuthority());
+        }
+        log.info("用户角色:{}",roles);
+        String token = JwtTokenUtils.createToken(jwtUser.getUsername(), jwtUser.getId().toString(),roles,false);
+        log.info("生成Token:{}",token);
+        //设置到缓存 过期时间1小时
+        redisUtils.set(jwtUser.getId().toString(),token,3600);
+        return token;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.perms.auth;
 
+import com.example.perms.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -38,8 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // 因为UserDetailsService的实现类实在太多啦，这里设置一下我们要注入的实现类
     @Qualifier("userDetailsServiceImpl")
     private UserDetailsService userDetailsService;
-    @Autowired
-    private RedisTemplate redisTemplate;
+    @Resource
+    private RedisUtils redisUtils;
 
     // 加密器
     @Bean
@@ -89,11 +90,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .permitAll()
                 .and()
-                // 添加到过滤链中
-                // 先是UsernamePasswordAuthenticationFilter用于login校验
-                .addFilter(new JWTAuthenticationFilter())
-                // 再通过OncePerRequestFilter，对其他请求过滤
-                .addFilter(new JWTAuthorizationFilter(authenticationManager()));
+                //通过OncePerRequestFilter，对其他请求过滤
+                .addFilter(new JWTAuthorizationFilter(authenticationManager(),redisUtils));
 
     }
 

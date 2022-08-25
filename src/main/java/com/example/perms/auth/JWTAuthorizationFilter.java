@@ -7,6 +7,7 @@ import com.example.perms.utils.JwtTokenUtils;
 import com.example.perms.utils.RedisUtils;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,11 +34,12 @@ import java.util.List;
 @Slf4j
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-    @Resource
+
     private RedisUtils redisUtils;
 
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager,RedisUtils redisUtils) {
         super(authenticationManager);
+        this.redisUtils=redisUtils;
     }
 
 

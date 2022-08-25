@@ -14,7 +14,7 @@ public class SysUserUpdRequest {
      * 用户ID
      */
     @ApiModelProperty("用户ID")
-    private String userId;
+    private Long userId;
     /**
      * 部门ID
      */

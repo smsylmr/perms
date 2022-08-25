@@ -1,6 +1,6 @@
 package com.example.perms.bean.vo;
 
-import com.example.perms.bean.entity.SysRoleMenu;
+import com.example.perms.bean.entity.SysMenu;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -71,5 +71,5 @@ public class SysUserVO implements Serializable {
     /**
      * 菜单列表
      */
-    private List<SysRoleMenu> menuList;
+    private List<SysMenu> menuList;
 }
