@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
  * @since 2020-12-09 16:39:46
  */
 @Data
-public class SysDept implements Serializable {
-    private static final long serialVersionUID = -41547530214874537L;
+public class SysDept {
     /**
     * 部门id
     */

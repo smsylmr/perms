@@ -12,8 +12,7 @@ import java.io.Serializable;
  * @since 2020-12-09 16:40:27
  */
 @Data
-public class SysMenu implements Serializable {
-    private static final long serialVersionUID = -71698582477433787L;
+public class SysMenu {
 
     @TableId
     private Integer menuId;

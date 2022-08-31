@@ -16,7 +16,6 @@ import java.util.List;
  */
 @Data
 public class SysUser implements Serializable {
-    private static final long serialVersionUID = -75833873040037398L;
     /**
      * 用户ID
      */

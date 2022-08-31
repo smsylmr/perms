@@ -13,8 +13,8 @@ import java.util.Date;
  * @since 2020-12-09 16:40:44
  */
 @Data
-public class SysRole implements Serializable {
-    private static final long serialVersionUID = -51223891528368336L;
+public class SysRole {
+
     /**
     * 角色ID
     */

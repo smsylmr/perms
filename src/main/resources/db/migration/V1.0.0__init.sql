@@ -174,3 +174,37 @@ CREATE TABLE `sys_user_role` (
 -- ----------------------------
 INSERT INTO `sys_user_role` VALUES ('1', '1', '1');
 INSERT INTO `sys_user_role` VALUES ('2', '2', '2');
+
+DROP TABLE IF EXISTS `drone`;
+CREATE TABLE `drone` (
+  `id` varchar(64) NOT NULL,
+  `model` varchar(64) NOT NULL COMMENT '型号',
+  `model_photo` varchar(64) DEFAULT NULL COMMENT '图片地址',
+  `serial_number` varchar(64) NOT NULL COMMENT '序列号',
+  `policy_no` varchar(64) DEFAULT NULL COMMENT '保险单号',
+  `network_status` char(1) DEFAULT '0' COMMENT '入网状态（0已入网 1未入网）',
+  `online_status` char(1) DEFAULT '0' COMMENT '在线状态（0在线 1离线）',
+  `device_status` char(1) DEFAULT '0' COMMENT '设备状态（0状态好 1状态良 2状态差 3维保中 4已报废）',
+  `purchasing_date` datetime DEFAULT NULL COMMENT '购买时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='无人机基本信息';
+
+DROP TABLE IF EXISTS `drone_maintenance_records`;
+CREATE TABLE `drone_maintenance` (
+  `id` varchar(64) NOT NULL,
+  `drone_id` varchar(64) NOT NULL COMMENT '无人机ID',
+  `maintenance_date` datetime NOT NULL COMMENT '维保时间',
+  `maintenance_reason` blob NOT NULL COMMENT '维保原因',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='无人机维保记录';
+
+DROP TABLE IF EXISTS `drone_maintenance_records`;
+CREATE TABLE `drone_flight` (
+  `id` varchar(64) NOT NULL,
+  `drone_id` varchar(64) NOT NULL COMMENT '无人机ID',
+  `flight_mileage` varchar(64) NOT NULL COMMENT '本次飞行里程',
+  `flight_consume` varchar(64) NOT NULL COMMENT '本次飞行耗时',
+  `flight_time` datetime NOT NULL COMMENT '飞行时间',
+  `last_online_time` datetime NOT NULL COMMENT '最后在线时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='无人机维保记录';

@@ -12,8 +12,7 @@ import java.io.Serializable;
  * @since 2020-12-09 16:40:57
  */
 @Data
-public class SysRoleMenu implements Serializable {
-    private static final long serialVersionUID = 420318902321905972L;
+public class SysRoleMenu {
 
     @TableId
     private Long id;
