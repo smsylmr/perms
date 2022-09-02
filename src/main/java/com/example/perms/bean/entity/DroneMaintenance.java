@@ -21,7 +21,7 @@ public class DroneMaintenance {
     /**
     * 无人机id
     */
-    private String drone_id;
+    private String droneId;
     /**
     * 维保时间
     */
@@ -29,7 +29,7 @@ public class DroneMaintenance {
     /**
     * 维保原因
     */
-    private String maintenance_reason;
+    private String maintenanceReason;
 
 
 }
