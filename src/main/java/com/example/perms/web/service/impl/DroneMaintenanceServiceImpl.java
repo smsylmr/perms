@@ -12,8 +12,17 @@ import org.springframework.stereotype.Service;
  * @author makejava
  * @since 2020-12-09 16:42:21
  */
-@Service("sysDeptService")
+@Service("droneMaintenanceService")
 public class DroneMaintenanceServiceImpl extends ServiceImpl<DroneMaintenanceMapper, DroneMaintenance> implements DroneMaintenanceService {
 
 
+    @Override
+    public DroneMaintenance getLastMaintenanceByDroneId(String droneId) {
+        return this.getBaseMapper().getLastMaintenanceByDroneId(droneId);
+    }
+
+    @Override
+    public Integer getCountByDroneId(String droneId) {
+        return this.getBaseMapper().getCountByDroneId(droneId);
+    }
 }

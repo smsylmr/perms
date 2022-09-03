@@ -1,24 +1,20 @@
-package com.example.perms.bean.vo;
+package com.example.perms.bean.req;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * @author Administrator
- * @description
- * @date 2022/9/2 14:39
+ * @author linmr
+ * @description:
+ * @date 2022/9/3
  */
 @Data
-public class DroneVO implements Serializable {
-    private static final long serialVersionUID = 1L;
-    /**
-     * 无人机id
-     */
-    private Long id;
+public class DroneAdd {
+
+    private String id;
     /**
      * 型号
      */
@@ -52,5 +48,4 @@ public class DroneVO implements Serializable {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime purchasingDate;
-
 }

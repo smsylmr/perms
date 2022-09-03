@@ -1,5 +1,6 @@
 package com.example.perms.bean.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
@@ -16,7 +17,7 @@ public class DroneFlight {
     /**
     * id
     */
-    @TableId
+    @TableId(type = IdType.ASSIGN_UUID)
     private String id;
     /**
     * 无人机id

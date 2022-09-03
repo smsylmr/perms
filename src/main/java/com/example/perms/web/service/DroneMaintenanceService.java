@@ -12,4 +12,7 @@ import com.example.perms.bean.entity.DroneMaintenance;
  */
 public interface DroneMaintenanceService extends IService<DroneMaintenance> {
 
+    DroneMaintenance getLastMaintenanceByDroneId(String droneId);
+
+    Integer getCountByDroneId(String droneId);
 }

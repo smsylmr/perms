@@ -3,6 +3,7 @@ package com.example.perms.web.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.perms.bean.entity.Drone;
 import com.example.perms.bean.req.DroneRequest;
+import com.example.perms.bean.vo.DroneData;
 import com.example.perms.bean.vo.DroneVO;
 import com.example.perms.utils.PageUtils;
 
@@ -15,4 +16,5 @@ import com.example.perms.utils.PageUtils;
 public interface DroneService extends IService<Drone> {
 
     PageUtils<DroneVO> list(DroneRequest droneRequest);
+
 }

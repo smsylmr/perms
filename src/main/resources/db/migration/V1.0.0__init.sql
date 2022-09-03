@@ -12,8 +12,6 @@ File Encoding         : 65001
 
 Date: 2020-12-18 17:15:57
 */
-create database if not exists perms;
-use perms;
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
@@ -36,7 +34,7 @@ CREATE TABLE `sys_dept` (
   `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`dept_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=200 DEFAULT CHARSET=utf8 COMMENT='部门表';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='部门表';
 
 -- ----------------------------
 -- Records of sys_dept
@@ -202,8 +200,8 @@ DROP TABLE IF EXISTS `drone_maintenance_records`;
 CREATE TABLE `drone_flight` (
   `id` varchar(64) NOT NULL,
   `drone_id` varchar(64) NOT NULL COMMENT '无人机ID',
-  `flight_mileage` varchar(64) NOT NULL COMMENT '本次飞行里程',
-  `flight_consume` varchar(64) NOT NULL COMMENT '本次飞行耗时',
+  `flight_mileage` decimal(10,2) NOT NULL COMMENT '本次飞行里程',
+  `flight_consume` decimal(10,2) NOT NULL COMMENT '本次飞行耗时',
   `flight_time` datetime NOT NULL COMMENT '飞行时间',
   `last_online_time` datetime NOT NULL COMMENT '最后在线时间',
   PRIMARY KEY (`id`)

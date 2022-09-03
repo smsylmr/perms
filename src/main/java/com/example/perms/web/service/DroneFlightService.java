@@ -3,6 +3,7 @@ package com.example.perms.web.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.perms.bean.entity.DroneFlight;
 import com.example.perms.bean.entity.DroneMaintenance;
+import com.example.perms.bean.vo.DroneData;
 
 /**
  * 无人机表(Drone)表服务接口
@@ -12,4 +13,5 @@ import com.example.perms.bean.entity.DroneMaintenance;
  */
 public interface DroneFlightService extends IService<DroneFlight> {
 
+    DroneData getFlightData(String droneId);
 }

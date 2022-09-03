@@ -1,7 +1,9 @@
 package com.example.perms.bean.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -16,8 +18,8 @@ public class DroneMaintenance {
     /**
     * id
     */
-    @TableId
-    private Long id;
+    @TableId(type = IdType.ASSIGN_UUID)
+    private String id;
     /**
     * 无人机id
     */
@@ -25,7 +27,8 @@ public class DroneMaintenance {
     /**
     * 维保时间
     */
-    private LocalDateTime flightTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime maintenanceTime;
     /**
     * 维保原因
     */

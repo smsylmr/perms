@@ -1,17 +1,18 @@
 package com.example.perms.web.controller;
 
-import com.example.perms.bean.entity.SysDept;
-import com.example.perms.bean.req.SysDeptRequest;
+import com.example.perms.bean.entity.DroneMaintenance;
 import com.example.perms.bean.res.ResCode;
 import com.example.perms.bean.res.Result;
-import com.example.perms.bean.vo.SysDeptTreeVO;
-import com.example.perms.bean.vo.SysDeptVO;
-import com.example.perms.utils.PageUtils;
-import com.example.perms.web.service.SysDeptService;
-import org.springframework.web.bind.annotation.*;
+import com.example.perms.web.service.DroneMaintenanceService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.time.LocalDateTime;
 
 /**
  * @author linmr
@@ -19,41 +20,17 @@ import java.util.List;
  * @date 2020/12/14
  */
 
+@Api(tags = "无人机维保记录模块")
 @RestController
+@RequestMapping("/maintenance")
 public class DroneMaintenanceController {
-
     @Resource
-    private SysDeptService sysDeptService;
+    private DroneMaintenanceService droneMaintenanceService;
 
-
-    @PostMapping("/dept/list")
-    public Result<PageUtils<SysDeptVO>> list(@RequestBody SysDeptRequest sysDeptRequest){
-        PageUtils<SysDeptVO> list = sysDeptService.list(sysDeptRequest);
-        return new Result<>(ResCode.OK,list);
-    }
-
-    @GetMapping("/dept/select")
-    public Result<List<SysDeptTreeVO>> select(){
-        List<SysDeptTreeVO> treeVOS = sysDeptService.select();
-        return new Result<>(ResCode.OK,treeVOS);
-    }
-
-    @PostMapping("/dept")
-    public Result<Void> add(@RequestBody SysDept sysDept){
-        sysDeptService.save(sysDept);
+    @PostMapping("/add")
+    @ApiOperation(value = "新增")
+    public Result<Void> add(@RequestBody DroneMaintenance droneMaintenance){
+        droneMaintenanceService.save(droneMaintenance);
         return new Result<>(ResCode.OK);
     }
-
-    @DeleteMapping("/dept/{deptId}")
-    public Result<Void> delete(@PathVariable String deptId){
-        sysDeptService.removeById(deptId);
-        return new Result<>(ResCode.OK);
-    }
-
-    @PutMapping("/dept/{deptId}")
-    public Result<Void> update(@RequestBody SysDept sysDept){
-        sysDeptService.updateById(sysDept);
-        return new Result<>(ResCode.OK);
-    }
-
 }

@@ -1,7 +1,9 @@
 package com.example.perms.bean.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -17,8 +19,8 @@ public class Drone {
     /**
     * 无人机id
     */
-    @TableId
-    private Long id;
+    @TableId(type = IdType.ASSIGN_UUID)
+    private String id;
     /**
     * 型号
     */
@@ -34,19 +36,19 @@ public class Drone {
     /**
     * 保险单号
     */
-    private Integer policyNo;
+    private String policyNo;
     /**
     * 入网状态（0已入网 1未入网）
     */
-    private String networkStatus;
+    private Integer networkStatus;
     /**
     * 在线状态（0在线 1离线）
     */
-    private String onlineStatus;
+    private Integer onlineStatus;
     /**
     * 设备状态（0状态好 1状态良 2状态差 3维保中 4已报废）
     */
-    private String deviceStatus;
+    private Integer deviceStatus;
     /**
     * 购买时间
     */
