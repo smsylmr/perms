@@ -1,6 +1,7 @@
 package com.example.perms.bean.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.io.Serializable;
  * @since 2020-12-09 16:40:57
  */
 @Data
+@TableName(value = "sys_role_menu")
 public class SysRoleMenu {
 
     @TableId

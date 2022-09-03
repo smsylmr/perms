@@ -1,5 +1,6 @@
 package com.example.perms.web.controller;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.example.perms.bean.entity.Drone;
 import com.example.perms.bean.req.DroneAdd;
 import com.example.perms.bean.req.DroneRequest;
@@ -59,7 +60,7 @@ public class DroneController {
     @DeleteMapping("/del/{droneId}")
     @ApiOperation(value = "删除")
     public Result<Void> delete(@PathVariable String droneId){
-        droneService.removeById(droneId);
+        droneService.del(droneId);
         return new Result<>(ResCode.OK);
     }
 

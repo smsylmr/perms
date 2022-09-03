@@ -1,8 +1,12 @@
 package com.example.perms.bean.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.example.perms.config.ConvertBlobTypeHandler;
 import lombok.Data;
+import org.apache.ibatis.type.JdbcType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -14,6 +18,7 @@ import java.time.LocalDateTime;
  * @since 2020-12-09 16:39:46
  */
 @Data
+@TableName(value = "drone_maintenance",autoResultMap = true)
 public class DroneMaintenance {
     /**
     * id
@@ -27,11 +32,11 @@ public class DroneMaintenance {
     /**
     * 维保时间
     */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime maintenanceTime;
     /**
     * 维保原因
     */
+    @TableField(typeHandler = ConvertBlobTypeHandler.class, jdbcType = JdbcType.BLOB)
     private String maintenanceReason;
 
 

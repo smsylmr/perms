@@ -2,6 +2,7 @@ package com.example.perms.bean.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
  * @since 2020-12-09 16:39:46
  */
 @Data
+@TableName(value = "drone")
 public class Drone {
     /**
     * 无人机id
@@ -49,6 +51,10 @@ public class Drone {
     * 设备状态（0状态好 1状态良 2状态差 3维保中 4已报废）
     */
     private Integer deviceStatus;
+    /**
+     * 是否删除（0否 1是）
+     */
+    private Integer delFlag;
     /**
     * 购买时间
     */

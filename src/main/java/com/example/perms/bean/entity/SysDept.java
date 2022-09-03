@@ -1,6 +1,7 @@
 package com.example.perms.bean.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
  * @since 2020-12-09 16:39:46
  */
 @Data
+@TableName(value = "sys_dept")
 public class SysDept {
     /**
     * 部门id

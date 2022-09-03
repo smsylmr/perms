@@ -18,7 +18,7 @@ public class DroneVO implements Serializable {
     /**
      * 无人机id
      */
-    private Long id;
+    private String id;
     /**
      * 型号
      */

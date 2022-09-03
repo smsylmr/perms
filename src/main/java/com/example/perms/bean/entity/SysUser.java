@@ -2,6 +2,7 @@ package com.example.perms.bean.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,7 +16,8 @@ import java.util.List;
  * @since 2020-12-09 16:41:09
  */
 @Data
-public class SysUser implements Serializable {
+@TableName(value = "user")
+public class SysUser {
     /**
      * 用户ID
      */

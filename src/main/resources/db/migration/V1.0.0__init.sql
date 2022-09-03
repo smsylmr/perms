@@ -183,18 +183,27 @@ CREATE TABLE `drone` (
   `network_status` char(1) DEFAULT '0' COMMENT '入网状态（0已入网 1未入网）',
   `online_status` char(1) DEFAULT '0' COMMENT '在线状态（0在线 1离线）',
   `device_status` char(1) DEFAULT '0' COMMENT '设备状态（0状态好 1状态良 2状态差 3维保中 4已报废）',
+  `del_flag` char(1) DEFAULT '0' COMMENT '是否删除（0否 1是）',
   `purchasing_date` datetime DEFAULT NULL COMMENT '购买时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='无人机基本信息';
+
+INSERT INTO `drone` VALUES ('1', 'Y1', '', 'Y1-001', 'B1111', '0', '0', '0', '0','2022-09-03 10:19:29');
+INSERT INTO `drone` VALUES ('2', 'B1', '', 'B1-001', 'B1101', '0', '0', '0', '0','2022-09-02 10:20:23');
+INSERT INTO `drone` VALUES ('3', 'K1K', '', 'K1K-001', 'B10000', '0', '0', '0', '0','2022-09-01 11:22:11');
+INSERT INTO `drone` VALUES ('4', 'L2', '', 'L1-001', 'B111002', '0', '0', '0','0', '2022-08-23 11:22:11');
 
 DROP TABLE IF EXISTS `drone_maintenance_records`;
 CREATE TABLE `drone_maintenance` (
   `id` varchar(64) NOT NULL,
   `drone_id` varchar(64) NOT NULL COMMENT '无人机ID',
-  `maintenance_date` datetime NOT NULL COMMENT '维保时间',
+  `maintenance_time` datetime NOT NULL COMMENT '维保时间',
   `maintenance_reason` blob NOT NULL COMMENT '维保原因',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='无人机维保记录';
+
+INSERT INTO `drone_maintenance` VALUES ('1', '1', '2022-09-02 10:54:55', '无法控制');
+INSERT INTO `drone_maintenance` VALUES ('2', '1', '2022-07-02 10:54:55', '进水');
 
 DROP TABLE IF EXISTS `drone_maintenance_records`;
 CREATE TABLE `drone_flight` (
@@ -206,3 +215,7 @@ CREATE TABLE `drone_flight` (
   `last_online_time` datetime NOT NULL COMMENT '最后在线时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='无人机维保记录';
+
+INSERT INTO `drone_flight` VALUES ('1', '1', '51.00', '0.50', '2022-09-01 10:21:32', '2022-09-01 10:21:36');
+INSERT INTO `drone_flight` VALUES ('2', '1', '100.05', '1.12', '2022-09-02 10:21:52', '2022-09-02 10:21:56');
+INSERT INTO `drone_flight` VALUES ('3', '1', '32.22', '1.20', '2022-09-03 10:22:30', '2022-09-03 10:22:36');

@@ -5,11 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.perms.bean.entity.Drone;
-import com.example.perms.bean.entity.SysDept;
 import com.example.perms.bean.req.DroneRequest;
-import com.example.perms.bean.vo.DroneData;
 import com.example.perms.bean.vo.DroneVO;
-import com.example.perms.bean.vo.SysDeptVO;
 import com.example.perms.utils.OrikaUtils;
 import com.example.perms.utils.PageUtils;
 import com.example.perms.web.mapper.DroneMapper;
@@ -46,9 +43,17 @@ public class DroneServiceImpl extends ServiceImpl<DroneMapper, Drone> implements
         if(StrUtil.isNotEmpty(droneRequest.getOnlineStatus())){
             queryWrapper.eq("online_status",Integer.parseInt(droneRequest.getOnlineStatus()));
         }
+        queryWrapper.eq("del_flag",0);
         Page<Drone> page = page(new Page<>(droneRequest.getCurPage(), droneRequest.getLimit()), queryWrapper);
         List<DroneVO> sysDeptVOS = OrikaUtils.mapAsList(page.getRecords(), DroneVO.class);
         return new PageUtils<>(sysDeptVOS,page);
+    }
+
+    @Override
+    public void del(String droneId) {
+        Drone byId = this.getById(droneId);
+        byId.setDelFlag(1);
+        this.updateById(byId);
     }
 
 }
